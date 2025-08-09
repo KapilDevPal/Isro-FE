@@ -212,12 +212,12 @@ export default function HomePage() {
             
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
               {[
-                { label: 'Organizations', value: data.stats.total_organizations, icon: Star },
-                { label: 'Rockets', value: data.stats.total_rockets, icon: Rocket },
-                { label: 'Satellites', value: data.stats.total_satellites, icon: Satellite },
-                { label: 'Total Launches', value: data.stats.total_launches, icon: Calendar },
-                { label: 'Upcoming', value: data.stats.upcoming_launches, icon: Calendar },
-                { label: 'News Articles', value: data.stats.recent_news, icon: Newspaper },
+                { label: 'Organizations', value: data.stats.total_organizations, icon: Star, href: '/organizations' },
+                { label: 'Rockets', value: data.stats.total_rockets, icon: Rocket, href: '/rockets' },
+                { label: 'Satellites', value: data.stats.total_satellites, icon: Satellite, href: '/satellites' },
+                { label: 'Total Launches', value: data.stats.total_launches, icon: Calendar, href: '/launches' },
+                { label: 'Upcoming', value: data.stats.upcoming_launches, icon: Calendar, href: '/launches' },
+                { label: 'News Articles', value: data.stats.recent_news, icon: Newspaper, href: '/news' },
               ].map((stat, index) => (
                 <motion.div
                   key={stat.label}
@@ -226,11 +226,13 @@ export default function HomePage() {
                   transition={{ duration: 0.8, delay: index * 0.1 }}
                   className="text-center"
                 >
-                  <div className="bg-slate-700 rounded-lg p-6 hover:bg-slate-600 transition-colors">
-                    <stat.icon className="w-8 h-8 mx-auto mb-4 text-blue-400" />
-                    <div className="text-3xl font-bold text-white mb-2">{stat.value}</div>
-                    <div className="text-gray-300">{stat.label}</div>
-                  </div>
+                  <Link href={stat.href}>
+                    <div className="bg-slate-700 rounded-lg p-6 hover:bg-slate-600 transition-colors cursor-pointer">
+                      <stat.icon className="w-8 h-8 mx-auto mb-4 text-blue-400" />
+                      <div className="text-3xl font-bold text-white mb-2">{stat.value}</div>
+                      <div className="text-gray-300">{stat.label}</div>
+                    </div>
+                  </Link>
                 </motion.div>
               ))}
             </div>
@@ -300,9 +302,10 @@ export default function HomePage() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="bg-transparent border-2 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white px-8 py-3 rounded-lg font-semibold transition-colors"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold flex items-center gap-2 transition-colors mx-auto"
                 >
                   View All Launches
+                  <ArrowRight className="w-5 h-5" />
                 </motion.button>
               </Link>
             </div>
@@ -324,44 +327,61 @@ export default function HomePage() {
             </motion.h2>
             
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {data.featured_rockets.map((rocket, index) => (
+              {data.featured_rockets.slice(0, 6).map((rocket, index) => (
                 <motion.div
                   key={rocket.id}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: index * 0.1 }}
-                  className="bg-slate-700 rounded-lg overflow-hidden hover:bg-slate-600 transition-colors"
+                  className="bg-slate-700 rounded-lg p-6 hover:bg-slate-600 transition-colors"
                 >
-                  <div className="h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                    <Rocket className="w-16 h-16 text-white" />
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold mb-2">{rocket.name}</h3>
-                    <p className="text-gray-400 mb-4">{rocket.organization.name}</p>
-                    <div className="flex justify-between text-sm mb-4">
-                      <span className="text-blue-400">{rocket.launch_count} launches</span>
-                      <span className="text-green-400">{rocket.success_rate}% success</span>
+                  <h3 className="text-xl font-semibold mb-2">{rocket.name}</h3>
+                  <p className="text-gray-400 mb-4">{rocket.organization.name}</p>
+                  <p className="text-gray-300 text-sm mb-4 line-clamp-2">{rocket.description}</p>
+                  
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="text-center">
+                      <div className="text-lg font-bold text-blue-400">{rocket.launch_count}</div>
+                      <div className="text-sm text-gray-400">Launches</div>
                     </div>
-                    <Link href={`/rockets/${rocket.id}`}>
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors"
-                      >
-                        Explore Rocket
-                        <ArrowRight className="w-4 h-4" />
-                      </motion.button>
-                    </Link>
+                    <div className="text-center">
+                      <div className="text-lg font-bold text-green-400">{rocket.success_rate}%</div>
+                      <div className="text-sm text-gray-400">Success Rate</div>
+                    </div>
                   </div>
+                  
+                  <Link href={`/rockets/${rocket.id}`}>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors"
+                    >
+                      View Details
+                      <ArrowRight className="w-4 h-4" />
+                    </motion.button>
+                  </Link>
                 </motion.div>
               ))}
+            </div>
+            
+            <div className="text-center mt-12">
+              <Link href="/rockets">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-semibold flex items-center gap-2 transition-colors mx-auto"
+                >
+                  View All Rockets
+                  <ArrowRight className="w-5 h-5" />
+                </motion.button>
+              </Link>
             </div>
           </div>
         </section>
       )}
 
-      {/* Recent News */}
-      {data && data.recent_news.length > 0 && (
+      {/* Featured Satellites */}
+      {data && data.featured_satellites.length > 0 && (
         <section className="py-20 bg-slate-900">
           <div className="container mx-auto px-4">
             <motion.h2
@@ -370,37 +390,107 @@ export default function HomePage() {
               transition={{ duration: 0.8 }}
               className="text-4xl font-bold text-center mb-12"
             >
-              Latest Space News
+              Featured Satellites
             </motion.h2>
             
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {data.recent_news.slice(0, 6).map((news, index) => (
+              {data.featured_satellites.slice(0, 6).map((satellite, index) => (
                 <motion.div
-                  key={news.id}
+                  key={satellite.id}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: index * 0.1 }}
-                  className="bg-slate-800 rounded-lg overflow-hidden hover:bg-slate-700 transition-colors"
+                  className="bg-slate-800 rounded-lg p-6 hover:bg-slate-700 transition-colors"
                 >
-                  <div className="h-48 bg-gradient-to-br from-green-500 to-blue-600 flex items-center justify-center">
-                    <Newspaper className="w-16 h-16 text-white" />
+                  <h3 className="text-xl font-semibold mb-2">{satellite.name}</h3>
+                  <p className="text-gray-400 mb-4">{satellite.organization.name}</p>
+                  <p className="text-gray-300 text-sm mb-4 line-clamp-2">{satellite.purpose}</p>
+                  
+                  <div className="text-center mb-4">
+                    <div className="text-lg font-bold text-green-400">{satellite.age_in_days}</div>
+                    <div className="text-sm text-gray-400">Days in Orbit</div>
                   </div>
-                  <div className="p-6">
-                    <h3 className="text-lg font-semibold mb-2 line-clamp-2">{news.title}</h3>
-                    <p className="text-gray-400 text-sm mb-2">{news.source}</p>
-                    <p className="text-gray-300 text-sm mb-4 line-clamp-3">{news.summary}</p>
-                    <a
-                      href={news.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-400 hover:text-blue-300 text-sm font-semibold flex items-center gap-2"
+                  
+                  <Link href={`/satellites/${satellite.id}`}>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors"
                     >
-                      Read More
+                      View Details
                       <ArrowRight className="w-4 h-4" />
-                    </a>
-                  </div>
+                    </motion.button>
+                  </Link>
                 </motion.div>
               ))}
+            </div>
+            
+            <div className="text-center mt-12">
+              <Link href="/satellites">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-semibold flex items-center gap-2 transition-colors mx-auto"
+                >
+                  View All Satellites
+                  <ArrowRight className="w-5 h-5" />
+                </motion.button>
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Recent News */}
+      {data && data.recent_news.length > 0 && (
+        <section className="py-20 bg-slate-800">
+          <div className="container mx-auto px-4">
+            <motion.h2
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-4xl font-bold text-center mb-12"
+            >
+              Recent News
+            </motion.h2>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {data.recent_news.slice(0, 6).map((article, index) => (
+                <motion.div
+                  key={article.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: index * 0.1 }}
+                  className="bg-slate-700 rounded-lg p-6 hover:bg-slate-600 transition-colors"
+                >
+                  <h3 className="text-lg font-semibold mb-2 line-clamp-2">{article.title}</h3>
+                  <p className="text-gray-400 mb-2">{article.source}</p>
+                  <p className="text-gray-300 text-sm mb-4 line-clamp-3">{article.summary}</p>
+                  
+                  <a
+                    href={article.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
+                  >
+                    Read More
+                    <ArrowRight className="w-4 h-4" />
+                  </a>
+                </motion.div>
+              ))}
+            </div>
+            
+            <div className="text-center mt-12">
+              <Link href="/news">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold flex items-center gap-2 transition-colors mx-auto"
+                >
+                  View All News
+                  <ArrowRight className="w-5 h-5" />
+                </motion.button>
+              </Link>
             </div>
           </div>
         </section>
