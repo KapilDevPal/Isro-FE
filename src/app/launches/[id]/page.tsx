@@ -53,8 +53,16 @@ export default function LaunchDetailPage({ params }: { params: Promise<{ id: str
     if (!launchId) return;
     
     fetch(`http://localhost:3001/api/v1/launches/${launchId}`)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then(data => {
+        if (data.error) {
+          throw new Error(data.error);
+        }
         setLaunch(data.launch || data);
         setLoading(false);
       })
@@ -175,7 +183,7 @@ export default function LaunchDetailPage({ params }: { params: Promise<{ id: str
                     <Rocket className="w-6 h-6 text-purple-400" />
                     <div>
                       <div className="text-gray-400 text-sm">Rocket</div>
-                      <div className="text-white font-semibold">{launch.rocket.name}</div>
+                      <div className="text-white font-semibold">{launch.rocket?.name || 'Unknown Rocket'}</div>
                     </div>
                   </div>
 
@@ -183,7 +191,9 @@ export default function LaunchDetailPage({ params }: { params: Promise<{ id: str
                     <Building2 className="w-6 h-6 text-yellow-400" />
                     <div>
                       <div className="text-gray-400 text-sm">Organization</div>
-                      <div className="text-white font-semibold">{launch.rocket.organization.name}</div>
+                      <div className="text-white font-semibold">
+                        {launch.rocket?.organization?.name || 'Unknown Organization'}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -251,7 +261,7 @@ export default function LaunchDetailPage({ params }: { params: Promise<{ id: str
                       <div key={satellite.id} className="bg-slate-700 rounded-lg p-4">
                         <div className="flex items-center gap-2 mb-2">
                           <Satellite className="w-4 h-4 text-green-400" />
-                          <span className="text-sm text-gray-400">{satellite.organization.name}</span>
+                          <span className="text-sm text-gray-400">{satellite.organization?.name || 'Unknown Organization'}</span>
                         </div>
                         <h3 className="text-lg font-semibold mb-2">{satellite.name}</h3>
                         <p className="text-gray-300 text-sm">{satellite.purpose}</p>
@@ -274,13 +284,13 @@ export default function LaunchDetailPage({ params }: { params: Promise<{ id: str
                 <div className="space-y-4">
                   <div>
                     <div className="text-gray-400 text-sm">Rocket Name</div>
-                    <div className="text-white font-semibold">{launch.rocket.name}</div>
+                    <div className="text-white font-semibold">{launch.rocket?.name || 'Unknown Rocket'}</div>
                   </div>
                   <div>
                     <div className="text-gray-400 text-sm">Organization</div>
-                    <div className="text-white font-semibold">{launch.rocket.organization.name}</div>
+                    <div className="text-white font-semibold">{launch.rocket?.organization?.name || 'Unknown Organization'}</div>
                   </div>
-                  {launch.rocket.description && (
+                  {launch.rocket?.description && (
                     <div>
                       <div className="text-gray-400 text-sm">Description</div>
                       <div className="text-white text-sm">{launch.rocket.description}</div>
@@ -289,15 +299,17 @@ export default function LaunchDetailPage({ params }: { params: Promise<{ id: str
                 </div>
 
                 <div className="mt-6 pt-6 border-t border-slate-700">
-                  <Link href={`/rockets/${launch.rocket.id}`}>
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold transition-colors"
-                    >
-                      View Rocket Details
-                    </motion.button>
-                  </Link>
+                  {launch.rocket?.id && (
+                    <Link href={`/rockets/${launch.rocket.id}`}>
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold transition-colors"
+                      >
+                        View Rocket Details
+                      </motion.button>
+                    </Link>
+                  )}
                 </div>
               </motion.div>
             </div>

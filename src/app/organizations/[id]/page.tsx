@@ -47,8 +47,16 @@ export default function OrganizationDetailPage({ params }: { params: Promise<{ i
     if (!orgId) return;
     
     fetch(`http://localhost:3001/api/v1/organizations/${orgId}`)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then(data => {
+        if (data.error) {
+          throw new Error(data.error);
+        }
         setOrganization(data.organization || data);
         setLoading(false);
       })

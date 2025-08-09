@@ -69,10 +69,17 @@ export default function LaunchesPage() {
       if (typeFilter === 'past') params.append('type', 'past');
 
       const response = await fetch(`http://localhost:3001/api/v1/launches?${params}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const result = await response.json();
+      if (result.error) {
+        throw new Error(result.error);
+      }
       setData(result);
     } catch (error) {
       console.error('Error fetching launches:', error);
+      setData(null);
     } finally {
       setLoading(false);
     }
@@ -236,7 +243,7 @@ export default function LaunchesPage() {
                       <div className="flex items-center gap-4 text-sm text-gray-400 mb-3">
                         <div className="flex items-center gap-1">
                           <Rocket className="w-4 h-4" />
-                          <span>{launch.rocket.name}</span>
+                          <span>{launch.rocket?.name || 'Unknown Rocket'}</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <MapPin className="w-4 h-4" />
@@ -299,7 +306,7 @@ export default function LaunchesPage() {
                       )}
 
                       {/* Satellites */}
-                      {launch.satellites.length > 0 && (
+                      {launch.satellites && launch.satellites.length > 0 && (
                         <div className="mb-4">
                           <p className="text-sm text-gray-400 mb-2">Payload:</p>
                           <div className="space-y-1">
@@ -358,11 +365,20 @@ export default function LaunchesPage() {
                 </div>
               )}
             </>
+          ) : !data ? (
+            <div className="text-center py-20">
+              <div className="text-red-400 text-xl font-semibold mb-4">Failed to load launches</div>
+              <button 
+                onClick={fetchLaunches}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg"
+              >
+                Try Again
+              </button>
+            </div>
           ) : (
             <div className="text-center py-20">
-              <Rocket className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-xl font-semibold text-gray-300 mb-2">No launches found</h3>
-              <p className="text-gray-400">Try adjusting your search criteria or filters.</p>
+              <div className="text-gray-400 text-xl font-semibold mb-4">No launches found</div>
+              <p className="text-gray-500">Try adjusting your search criteria or filters.</p>
             </div>
           )}
         </div>
