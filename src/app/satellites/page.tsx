@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Satellite, Search, Filter, ArrowRight, Building2, Orbit } from 'lucide-react';
 import Link from 'next/link';
 import Navigation from '@/components/Navigation';
+import Pagination from '@/components/Pagination';
 
 interface Satellite {
   id: number;
@@ -31,6 +32,8 @@ export default function SatellitesPage() {
   const [selectedOrganization, setSelectedOrganization] = useState('');
   const [selectedOrbitType, setSelectedOrbitType] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
 
   useEffect(() => {
     fetch('http://localhost:3001/api/v1/satellites')
@@ -55,6 +58,17 @@ export default function SatellitesPage() {
     
     return matchesSearch && matchesOrganization && matchesOrbitType && matchesStatus;
   });
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredSatellites.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentSatellites = filteredSatellites.slice(startIndex, endIndex);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedOrganization, selectedOrbitType, selectedStatus]);
 
   const organizations = [...new Set(satellites.map(satellite => satellite.organization.name))];
   const orbitTypes = [...new Set(satellites.map(satellite => satellite.orbit_type))];
@@ -146,11 +160,20 @@ export default function SatellitesPage() {
         </div>
       </section>
 
+      {/* Results Count */}
+      <section className="py-4 bg-slate-800 border-t border-slate-700">
+        <div className="container mx-auto px-4">
+          <p className="text-gray-300">
+            Showing {startIndex + 1}-{Math.min(endIndex, filteredSatellites.length)} of {filteredSatellites.length} satellites
+          </p>
+        </div>
+      </section>
+
       {/* Satellites Grid */}
       <section className="py-12">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredSatellites.map((satellite, index) => (
+            {currentSatellites.map((satellite, index) => (
               <motion.div
                 key={satellite.id}
                 initial={{ opacity: 0, y: 30 }}
@@ -221,6 +244,18 @@ export default function SatellitesPage() {
               <Satellite className="w-16 h-16 mx-auto mb-4 text-gray-400" />
               <h3 className="text-xl font-semibold text-gray-300 mb-2">No satellites found</h3>
               <p className="text-gray-400">Try adjusting your search or filters</p>
+            </div>
+          )}
+
+          {/* Pagination */}
+          {filteredSatellites.length > 0 && (
+            <div className="mt-12">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                className="mt-8"
+              />
             </div>
           )}
         </div>

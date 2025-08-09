@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Building2, Rocket, Satellite, Globe, ArrowRight, Users } from 'lucide-react';
 import Link from 'next/link';
 import Navigation from '@/components/Navigation';
+import Pagination from '@/components/Pagination';
 
 interface Organization {
   id: number;
@@ -24,6 +25,8 @@ export default function OrganizationsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedType, setSelectedType] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
 
   useEffect(() => {
     fetch('http://localhost:3001/api/v1/organizations')
@@ -46,6 +49,17 @@ export default function OrganizationsPage() {
     
     return matchesSearch && matchesCountry && matchesType;
   });
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredOrganizations.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentOrganizations = filteredOrganizations.slice(startIndex, endIndex);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedCountry, selectedType]);
 
   const countries = [...new Set(organizations.map(org => org.country))];
   const types = [...new Set(organizations.map(org => org.type))];
@@ -124,11 +138,20 @@ export default function OrganizationsPage() {
         </div>
       </section>
 
+      {/* Results Count */}
+      <section className="py-4 bg-slate-800 border-t border-slate-700">
+        <div className="container mx-auto px-4">
+          <p className="text-gray-300">
+            Showing {startIndex + 1}-{Math.min(endIndex, filteredOrganizations.length)} of {filteredOrganizations.length} organizations
+          </p>
+        </div>
+      </section>
+
       {/* Organizations Grid */}
       <section className="py-12">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredOrganizations.map((org, index) => (
+            {currentOrganizations.map((org, index) => (
               <motion.div
                 key={org.id}
                 initial={{ opacity: 0, y: 30 }}
@@ -198,6 +221,18 @@ export default function OrganizationsPage() {
               <Building2 className="w-16 h-16 mx-auto mb-4 text-gray-400" />
               <h3 className="text-xl font-semibold text-gray-300 mb-2">No organizations found</h3>
               <p className="text-gray-400">Try adjusting your search or filters</p>
+            </div>
+          )}
+
+          {/* Pagination */}
+          {filteredOrganizations.length > 0 && (
+            <div className="mt-12">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                className="mt-8"
+              />
             </div>
           )}
         </div>

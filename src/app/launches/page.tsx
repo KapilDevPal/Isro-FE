@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Rocket, Calendar, MapPin, Search, Filter, ArrowRight, Clock } from 'lucide-react';
 import Link from 'next/link';
 import Navigation from '@/components/Navigation';
+import Pagination from '@/components/Pagination';
 
 interface Launch {
   id: number;
@@ -335,26 +336,13 @@ export default function LaunchesPage() {
 
               {/* Pagination */}
               {data.pagination.total_pages > 1 && (
-                <div className="flex justify-center items-center gap-2 mt-12">
-                  <button
-                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                    disabled={currentPage === 1}
-                    className="px-4 py-2 bg-slate-700 hover:bg-slate-600 disabled:bg-slate-800 disabled:text-gray-500 text-white rounded-lg transition-colors"
-                  >
-                    Previous
-                  </button>
-                  
-                  <span className="px-4 py-2 text-gray-300">
-                    Page {currentPage} of {data.pagination.total_pages}
-                  </span>
-                  
-                  <button
-                    onClick={() => setCurrentPage(Math.min(data.pagination.total_pages, currentPage + 1))}
-                    disabled={currentPage === data.pagination.total_pages}
-                    className="px-4 py-2 bg-slate-700 hover:bg-slate-600 disabled:bg-slate-800 disabled:text-gray-500 text-white rounded-lg transition-colors"
-                  >
-                    Next
-                  </button>
+                <div className="mt-12">
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={data.pagination.total_pages}
+                    onPageChange={setCurrentPage}
+                    className="mt-8"
+                  />
                 </div>
               )}
             </>

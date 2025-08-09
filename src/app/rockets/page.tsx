@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Rocket, Search, Filter, ArrowRight, Building2 } from 'lucide-react';
 import Link from 'next/link';
 import Navigation from '@/components/Navigation';
+import Pagination from '@/components/Pagination';
 
 interface Rocket {
   id: number;
@@ -30,6 +31,8 @@ export default function RocketsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedOrganization, setSelectedOrganization] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
 
   useEffect(() => {
     fetch('http://localhost:3001/api/v1/rockets')
@@ -52,6 +55,17 @@ export default function RocketsPage() {
     
     return matchesSearch && matchesOrganization && matchesStatus;
   });
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredRockets.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentRockets = filteredRockets.slice(startIndex, endIndex);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedOrganization, selectedStatus]);
 
   const organizations = [...new Set(rockets.map(rocket => rocket.organization.name))];
   const statuses = [...new Set(rockets.map(rocket => rocket.status))];
@@ -130,11 +144,20 @@ export default function RocketsPage() {
         </div>
       </section>
 
+      {/* Results Count */}
+      <section className="py-4 bg-slate-800 border-t border-slate-700">
+        <div className="container mx-auto px-4">
+          <p className="text-gray-300">
+            Showing {startIndex + 1}-{Math.min(endIndex, filteredRockets.length)} of {filteredRockets.length} rockets
+          </p>
+        </div>
+      </section>
+
       {/* Rockets Grid */}
       <section className="py-12">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredRockets.map((rocket, index) => (
+            {currentRockets.map((rocket, index) => (
               <motion.div
                 key={rocket.id}
                 initial={{ opacity: 0, y: 30 }}
@@ -206,6 +229,18 @@ export default function RocketsPage() {
               <Rocket className="w-16 h-16 mx-auto mb-4 text-gray-400" />
               <h3 className="text-xl font-semibold text-gray-300 mb-2">No rockets found</h3>
               <p className="text-gray-400">Try adjusting your search or filters</p>
+            </div>
+          )}
+
+          {/* Pagination */}
+          {filteredRockets.length > 0 && (
+            <div className="mt-12">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                className="mt-8"
+              />
             </div>
           )}
         </div>
