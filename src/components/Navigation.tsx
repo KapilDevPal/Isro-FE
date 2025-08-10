@@ -12,7 +12,8 @@ import {
   Building2, 
   Menu, 
   X,
-  Home
+  Home,
+  TrendingUp
 } from 'lucide-react';
 
 export default function Navigation() {
@@ -26,6 +27,7 @@ export default function Navigation() {
     { href: '/satellites', label: 'Satellites', icon: Satellite },
     { href: '/organizations', label: 'Organizations', icon: Building2 },
     { href: '/news', label: 'News', icon: Newspaper },
+    { href: '/analytics', label: 'Analytics', icon: TrendingUp },
   ];
 
   const isActive = (href: string) => {

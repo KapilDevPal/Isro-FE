@@ -228,6 +228,18 @@ export default function HomePage() {
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </motion.button>
             </Link>
+            
+            <Link href="/satellites">
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="group bg-gradient-to-r from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 text-white px-10 py-4 rounded-xl font-bold text-lg flex items-center gap-3 transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-green-500/25"
+              >
+                <Globe className="w-6 h-6 group-hover:animate-pulse" />
+                Discover Satellites
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </motion.button>
+            </Link>
           </motion.div>
 
           {/* Feature Highlights */}
@@ -278,6 +290,105 @@ export default function HomePage() {
         </motion.div>
       </section>
 
+      {/* All Features Section */}
+      <section className="py-24 bg-gradient-to-b from-slate-800 to-slate-900 relative overflow-hidden">
+        <div className="container mx-auto px-4 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-5xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent mb-6">
+              Explore All Features
+            </h2>
+            <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+              Discover the complete range of space exploration tools and information
+            </p>
+          </motion.div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              {
+                title: "Space Missions",
+                description: "Track ongoing and planned space missions with detailed milestones and objectives",
+                icon: Star,
+                href: "/missions",
+                color: "from-yellow-500 to-orange-500",
+                hoverColor: "hover:from-yellow-400 hover:to-orange-400"
+              },
+              {
+                title: "Organizations",
+                description: "Learn about space agencies and organizations from around the world",
+                icon: Users,
+                href: "/organizations",
+                color: "from-blue-500 to-cyan-500",
+                hoverColor: "hover:from-blue-400 hover:to-cyan-400"
+              },
+              {
+                title: "Analytics",
+                description: "View comprehensive space exploration statistics and insights",
+                icon: TrendingUp,
+                href: "/analytics",
+                color: "from-green-500 to-emerald-500",
+                hoverColor: "hover:from-green-400 hover:to-emerald-400"
+              },
+              {
+                title: "News & Updates",
+                description: "Stay informed with the latest space exploration news and developments",
+                icon: Newspaper,
+                href: "/news",
+                color: "from-purple-500 to-pink-500",
+                hoverColor: "hover:from-purple-400 hover:to-pink-400"
+              },
+              {
+                title: "Launch Sites",
+                description: "Explore launch facilities and spaceports around the globe",
+                icon: Globe,
+                href: "/launches",
+                color: "from-red-500 to-pink-500",
+                hoverColor: "hover:from-red-400 hover:to-pink-400"
+              },
+              {
+                title: "Space Events",
+                description: "Discover upcoming space events and historical milestones",
+                icon: Calendar,
+                href: "/launches",
+                color: "from-indigo-500 to-purple-500",
+                hoverColor: "hover:from-indigo-400 hover:to-purple-400"
+              }
+            ].map((feature, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: index * 0.1 }}
+                whileHover={{ scale: 1.02, y: -5 }}
+                className="group bg-gradient-to-br from-slate-700 to-slate-800 rounded-2xl p-8 hover:from-slate-600 hover:to-slate-700 transition-all duration-300 border border-slate-600 hover:border-slate-500 shadow-lg hover:shadow-xl"
+              >
+                <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r ${feature.color} rounded-xl mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                  <feature.icon className="w-8 h-8 text-white" />
+                </div>
+                
+                <h3 className="text-2xl font-bold mb-4 text-white group-hover:text-blue-400 transition-colors">{feature.title}</h3>
+                <p className="text-gray-300 text-base mb-6 line-clamp-3">{feature.description}</p>
+                
+                <Link href={feature.href}>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className={`w-full bg-gradient-to-r ${feature.color} ${feature.hoverColor} text-white py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-3 transition-all duration-300 shadow-lg hover:shadow-xl`}
+                  >
+                    Explore
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </motion.button>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Stats Section */}
       {data && (
         <section className="py-24 bg-gradient-to-b from-slate-800 to-slate-900 relative overflow-hidden">
@@ -309,6 +420,7 @@ export default function HomePage() {
                 { label: 'Total Launches', value: data.stats.total_launches, icon: Calendar, href: '/launches', color: 'from-purple-400 to-pink-400' },
                 { label: 'Upcoming', value: data.stats.upcoming_launches, icon: Calendar, href: '/launches', color: 'from-red-400 to-pink-400' },
                 { label: 'News Articles', value: data.stats.recent_news, icon: Newspaper, href: '/news', color: 'from-indigo-400 to-blue-400' },
+                { label: 'Analytics', value: '📊', icon: TrendingUp, href: '/analytics', color: 'from-emerald-400 to-teal-400' },
               ].map((stat, index) => (
                 <motion.div
                   key={stat.label}
@@ -640,6 +752,18 @@ export default function HomePage() {
                 >
                   <Rocket className="w-6 h-6" />
                   Start Exploring
+                  <ArrowRight className="w-5 h-5" />
+                </motion.button>
+              </Link>
+              
+              <Link href="/satellites">
+                <motion.button
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-white text-slate-900 px-10 py-4 rounded-xl font-bold text-lg flex items-center gap-3 transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-white/25"
+                >
+                  <Globe className="w-6 h-6" />
+                  Explore Satellites
                   <ArrowRight className="w-5 h-5" />
                 </motion.button>
               </Link>
